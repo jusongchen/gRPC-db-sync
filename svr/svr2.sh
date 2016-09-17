@@ -1,0 +1,1 @@
+svr -p=36061 -join=jusongch-wsl:36060 

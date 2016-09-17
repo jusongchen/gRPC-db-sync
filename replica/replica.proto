@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+service SyncUp {
+  // DataChange() send data change requests to peers
+  rpc DataChange(stream Record) returns (DataChgSummary) {}
+
+  // NodeChange send Join or Quit request to other peers
+  rpc NodeChange(NodeChgRequest) returns (NodeChgResponse) {}
+
+  // NodeQuery ask for a list of all nodes
+  rpc NodeQuery(NodeQryRequest) returns (NodeQryResponse) {}
+
+  //Ping peers
+  rpc Ping(PingRequest) returns (PingResponse) {}
+}
+
+
+message Record {
+  int32  key = 1;
+  string value = 2; 
+}
+
+message DataChgSummary {
+  // The number of record received.
+  int64 record_count = 1; 
+  // The duration of the traversal in seconds.
+  int32 elapsed_time = 2;
+}
+
+
+message NodeChgRequest {
+  enum Operations {
+    UNKNOWN=0;
+    //A new node request to join the cluster
+    JOIN  = 1;
+    //A node request to quit the cluster
+    QUIT  = 2;
+    //request to add a node to the server list as a new node just joined
+    ADD   = 3;
+    //Request to drop a node from the server list as a node just  quit
+    DROP  = 4;
+  }
+  Operations operation =1; 
+  string NodeAddr  =2;
+}
+
+
+
+message NodeChgResponse{
+  bool fail = 1;
+  string err_msg  =2;
+}
+
+
+message NodeQryRequest {
+  string NodeAddr  =1;
+}
+
+
+message NodeQryResponse {
+  repeated string NodeAddr  =1;
+}
+
+
+
+// A PingRequest specifies the string to echo in response.
+// Fields are exported so that they will be serialized in the rpc call.
+message PingRequest {
+  // Echo this string with PingResponse.
+  string ping = 1 ;
+  // The address of the client.
+  string addr = 2;
+}
+
+// A PingResponse contains the echoed ping request string.
+message PingResponse {
+  // An echo of value sent with PingRequest.
+  string pong = 1;
+}
+
+
